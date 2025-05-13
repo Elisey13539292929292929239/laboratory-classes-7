@@ -12,6 +12,8 @@ const { STATUS_CODE } = require("./constants/statusCode");
 const { MENU_LINKS } = require("./constants/navigation");
 const cartController = require("./controllers/cartController");
 
+const { mongoConnect } = require("./database");
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -22,7 +24,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((request, _response, next) => {
   const { url, method } = request;
-
   logger.getInfoLog(url, method);
   next();
 });
@@ -44,4 +45,8 @@ app.use((request, response) => {
   logger.getErrorLog(url);
 });
 
-app.listen(PORT);
+mongoConnect(() => {
+  app.listen(PORT, () => {
+    console.log(`Сервер запущен на порту ${PORT}`);
+  });
+});
